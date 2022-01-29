@@ -9,11 +9,46 @@ python = "^3.9"
 requests = "^2.27.1"
 beautifulsoup4 = "^4.10.0"
 pandas = "^1.4.0"
+azure-storage-blob = "^12.9.0"
+types-requests = "^2.27.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 freezegun = "^1.1.0"
+black = "^21.12b0"
+flake8 = "^4.0.1"
+mypy = "^0.931"
+isort = "^5.10.1"
+vulture = "^2.3"
+types-freezegun = "^1.1.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.vulture]
+exclude = ["tests",".venv"]
+
+[tool.mypy]
+python_version = 3.9
+ignore_missing_imports = true
+disallow_untyped_defs = true
+exclude = "tests"
+
+[[tool.mypy.overrides]]
+module = ['azure.*']
+ignore_errors = true
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.coverage.run]
+omit = [
+    "scripts/*",
+    "tests/*",
+    ]
+
