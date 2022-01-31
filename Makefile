@@ -25,7 +25,7 @@ lint:
 .PHONY: test
 ## Run unit tests
 test:
-	@poetry run python -m pytest -m "not integration and not end_to_end" -v
+	poetry run python -m pytest -m "not integration and not end_to_end" -v
 
 .PHONY: all
 ## Run all required pre-push commands
