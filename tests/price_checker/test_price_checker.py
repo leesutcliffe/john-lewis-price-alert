@@ -4,8 +4,9 @@ from unittest import mock
 import freezegun
 import pandas as pd
 
+from src.price_checker import price_checker
+from src.price_checker.price_checker import get_previous_prices
 from src.repository.datastore import DataStore
-from src.repository.price_checker import price_checker
 
 user_agent = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
@@ -49,7 +50,7 @@ def test_save_price_pandas_dataframe():
     }
     expected_df = pd.DataFrame(data=test_expected).set_index("Date")
 
-    actual_df = price_checker.add_current_price(test_df, 450.0)
+    actual_df = price_checker.add_current_price_to_df(test_df, 450.0)
     pd.testing.assert_frame_equal(expected_df, actual_df)
 
 
@@ -59,11 +60,12 @@ def test_get_previous_prices_as_dataframe():
         "Date": [datetime(2022, 1, 1)],
         "Price": [450.0],
     }
-    test_csv_as_bytes = bytes(pd.DataFrame(data=test_data).set_index("Date").to_csv(), "utf-8")
+    test_df = pd.DataFrame(data=test_data).set_index("Date")
+    test_csv_as_bytes = bytes(test_df.to_csv(), "utf-8")
 
     mocked_datastore = mock.MagicMock(spec=DataStore)
     mocked_datastore.download.return_value = test_csv_as_bytes
-    mocked_datastore.blob_exists.return_value = test_csv_as_bytes
+    mocked_datastore.blob_exists.return_value = True
 
-
-#
+    actual_df = get_previous_prices(mocked_datastore)
+    pd.testing.assert_frame_equal(test_df, actual_df)
