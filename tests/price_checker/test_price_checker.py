@@ -1,9 +1,10 @@
-import datetime
+from datetime import datetime
 from unittest import mock
 
 import freezegun
 import pandas as pd
 
+from src.repository.datastore import DataStore
 from src.repository.price_checker import price_checker
 
 user_agent = (
@@ -38,15 +39,31 @@ def test_it_returns_price_when_url_is_requested():
 @freezegun.freeze_time("2022-01-02")
 def test_save_price_pandas_dataframe():
     test_data = {
-        "Date": [datetime.datetime(2022, 1, 1)],
+        "Date": [datetime(2022, 1, 1)],
         "Price": [450.0],
     }
-    test_df = pd.DataFrame(data=test_data)
+    test_df = pd.DataFrame(data=test_data).set_index("Date")
     test_expected = {
-        "Date": [datetime.datetime(2022, 1, 1), datetime.datetime(2022, 1, 2)],
+        "Date": [datetime(2022, 1, 1), datetime(2022, 1, 2)],
         "Price": [450.0, 450.0],
     }
-    expected_df = pd.DataFrame(data=test_expected)
+    expected_df = pd.DataFrame(data=test_expected).set_index("Date")
 
     actual_df = price_checker.add_current_price(test_df, 450.0)
     pd.testing.assert_frame_equal(expected_df, actual_df)
+
+
+@freezegun.freeze_time("2022-01-02")
+def test_get_previous_prices_as_dataframe():
+    test_data = {
+        "Date": [datetime(2022, 1, 1)],
+        "Price": [450.0],
+    }
+    test_csv_as_bytes = bytes(pd.DataFrame(data=test_data).set_index("Date").to_csv(), "utf-8")
+
+    mocked_datastore = mock.MagicMock(spec=DataStore)
+    mocked_datastore.download.return_value = test_csv_as_bytes
+    mocked_datastore.blob_exists.return_value = test_csv_as_bytes
+
+
+#

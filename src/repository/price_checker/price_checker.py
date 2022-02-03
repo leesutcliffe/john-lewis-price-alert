@@ -21,6 +21,6 @@ def get_price(ercol_url: str, get: Callable) -> float:
 
 
 def add_current_price(df: pd.DataFrame, price: float) -> pd.DataFrame:
-    new_row = pd.DataFrame({"Date": [datetime.datetime.now()], "Price": [price]})
-    updated_df = pd.concat([df, new_row], ignore_index=True)
+    new_row = pd.DataFrame({"Date": [datetime.datetime.now()], "Price": [price]}).set_index("Date")
+    updated_df = pd.concat([df, new_row])
     return updated_df
