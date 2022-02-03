@@ -5,18 +5,12 @@ from collections.abc import Callable
 import pandas as pd
 from bs4 import BeautifulSoup
 
+from src.constants import USER_AGENT
 from src.repository.datastore import DataStore
-
-user_agent = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
-    "(KHTML, like Gecko) Version/15.0 "
-    "Safari/605.1.15 "
-)
-headers = {"User-Agent": user_agent}
 
 
 def get_price(ercol_url: str, get: Callable) -> float:
-    response = get(ercol_url, headers=headers)
+    response = get(ercol_url, headers={"User-Agent": USER_AGENT})
     soup = BeautifulSoup(response.content, "html.parser")
     tags = soup.find_all(class_="price price--large")
     item_price = tags[0].string[1:7]

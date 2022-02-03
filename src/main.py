@@ -1,11 +1,11 @@
 import requests
 
-from src.constants import ercol_url
+from src.constants import ERCOL_URL
 from src.repository.price_checker.price_checker import get_price
 
 
 def main() -> None:
-    price = get_price(ercol_url, requests.get)
+    price = get_price(ERCOL_URL, requests.get)
     print(price)
 
 

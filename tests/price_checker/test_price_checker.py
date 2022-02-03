@@ -4,20 +4,15 @@ from unittest import mock
 import freezegun
 import pandas as pd
 
+from src.constants import USER_AGENT
 from src.price_checker import price_checker
 from src.price_checker.price_checker import get_previous_prices
 from src.repository.datastore import DataStore
 
-user_agent = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
-    "(KHTML, like Gecko) Version/15.0 "
-    "Safari/605.1.15 "
-)
-
 
 def test_it_returns_price_when_url_is_requested():
     test_url = "https://www.abc.com"
-    headers = {"User-Agent": user_agent}
+    headers = {"User-Agent": USER_AGENT}
 
     def _get_content():
         with open("tests/price_checker/ercol_page.html", "rb") as f:
