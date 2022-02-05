@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  azurite:
+    container_name: "azurite"
+    image: mcr.microsoft.com/azure-storage/azurite
+    pull_policy: always
+    ports:
+      - "10000:10000"
+      - "10002:10002"

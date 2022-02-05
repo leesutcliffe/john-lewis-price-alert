@@ -11,6 +11,7 @@ beautifulsoup4 = "^4.10.0"
 pandas = "^1.4.0"
 azure-storage-blob = "^12.9.0"
 types-requests = "^2.27.7"
+azure-identity = "^1.7.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -51,4 +52,8 @@ omit = [
     "scripts/*",
     "tests/*",
     ]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore:Using or importing the ABCs.*"]
+markers = ["integration: mark a test as a integration test"]
 

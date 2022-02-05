@@ -13,7 +13,8 @@ class DataStore:
         self.blob_client = self.blob_service_client.get_blob_client(self.container_name, self.blob_name)
 
     def save_data(self, data: str) -> None:
-        self.blob_client.upload_blob(data, overwrite=True)
+        data_bytes = data.encode("utf-8")
+        self.blob_client.upload_blob(data_bytes, overwrite=True)
 
     def download(self) -> bytes:
         downloader = self.blob_client.download_blob()

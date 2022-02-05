@@ -25,9 +25,21 @@ lint:
 .PHONY: test
 ## Run unit tests
 test:
-	poetry run python -m pytest -m "not integration and not end_to_end" -v
+	poetry run python -m pytest -m "not integration" -v
 
 .PHONY: all
 ## Run all required pre-push commands
 all: format lint test
 	@echo -e "\n\n >> All Good!!! << :)"
+
+.PHONY: pre-integration
+## Runs pre-integration setups
+pre-integration:
+	@docker-compose --profile integration pull
+	@docker-compose --profile integration up --force-recreate --always-recreate-deps --renew-anon-volumes --remove-orphans -d
+
+.PHONY: integration
+## Runs integration tests
+integration: pre-integration
+	@poetry run python -m pytest -m integration
+	@docker-compose --profile integration down

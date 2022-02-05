@@ -1,33 +1,50 @@
-# from datetime import datetime
-# from unittest import mock
-#
-# import freezegun
-# import pandas as pd
-# from azure.storage.blob import BlobServiceClient, BlobClient
-#
-# from src.main import prepare_data
-# from src.repository.datastore import DataStore
+import freezegun
+import pytest
+
+from src.main import main
 
 
-# def test_csv_is_read_if_blob_exists():
-#     test_data = {
-#         "Date": [datetime(2022, 1, 1)],
-#         "Price": [450.0],
-#     }
-#     test_csv_as_bytes = bytes(pd.DataFrame(data=test_data).to_csv(), 'utf-8')
-#
-#     mocked_datastore = mock.MagicMock(spec=DataStore)
-#     mocked_datastore.dowload.return_value = test_csv_as_bytes
-#     mocked_datastore.exists.return_value = test_csv_as_bytes
-#
-#     mocked_datastore.save_data.assert_called_once_with()
+@pytest.mark.integration
+@freezegun.freeze_time("2022-01-01")
+def test_data_is_saved_when_data_doesnt_exist(integration_clients, test_df_to_csv):
+    blob_client = integration_clients["blob_client"]
+    container_client = integration_clients["container_client"]
 
-# @freezegun.freeze_time("2022-01-01")
-# def test_price_is_added_to_dataframe():
-#     test_data = {
-#         "Date": [datetime(2022, 1, 1)],
-#         "Price": [450.0],
-#     }
-#     expected = pd.DataFrame(data=test_data)
-#     actual = prepare_data(450.0)
-#     pd.testing.assert_frame_equal(expected, actual)
+    main()
+
+    download_stream = blob_client.download_blob()
+    actual_csv_data = download_stream.readall()
+    test_csv_data = test_df_to_csv.encode("utf-8")
+
+    assert test_csv_data == actual_csv_data
+    assert blob_client.blob_name == "prices.csv"
+
+    # clean up
+    blob_client.delete_blob()
+    container_client.delete_container()
+
+
+@pytest.mark.integration
+@freezegun.freeze_time("2022-01-02")
+def test_data_is_saved_when_existing_data_already_exists(
+    integration_clients, test_df_to_csv, test_with_existing_df_to_csv
+):
+    blob_client = integration_clients["blob_client"]
+    container_client = integration_clients["container_client"]
+
+    # setup existing data
+    test_csv_as_bytes = test_df_to_csv.encode("utf-8")
+    blob_client.upload_blob(data=test_csv_as_bytes)
+
+    main()
+
+    download_stream = blob_client.download_blob()
+    actual_downloaded_data = download_stream.readall()
+    expected_downloaded_data = test_with_existing_df_to_csv.encode("utf-8")
+
+    assert expected_downloaded_data == actual_downloaded_data
+    assert blob_client.blob_name == "prices.csv"
+
+    # clean up
+    blob_client.delete_blob()
+    container_client.delete_container()

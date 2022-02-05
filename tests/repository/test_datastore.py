@@ -15,8 +15,7 @@ def test_data_is_uploaded_blob_storage():
         "Date": [datetime(2022, 1, 1), datetime(2022, 1, 1)],
         "Price": [450.0, 450.0],
     }
-    csv_data = pd.DataFrame(data=test_data).to_csv
-
+    csv_data = pd.DataFrame(data=test_data).to_csv()
     mocked_blob_svc_client = mock.MagicMock(spec=BlobServiceClient)
     mocked_blob_client = mock.MagicMock(spec=BlobClient)
     mocked_blob_client.upload_blob.return_value = None
@@ -26,7 +25,7 @@ def test_data_is_uploaded_blob_storage():
     datastore.save_data(csv_data)
 
     mocked_blob_svc_client.get_blob_client.assert_called_once_with(CONTAINER_NAME, BLOB_NAME)
-    mocked_blob_client.upload_blob.assert_called_once_with(csv_data, overwrite=True)
+    mocked_blob_client.upload_blob.assert_called_once_with(csv_data.encode("utf-8"), overwrite=True)
 
 
 def test_download_csv_from_blob_storage():
