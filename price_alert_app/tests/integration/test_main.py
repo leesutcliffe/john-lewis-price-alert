@@ -1,7 +1,12 @@
+import os
+
 import freezegun
 import pytest
 
-from price_alert_app.src.main import main
+from price_alert_app.src.start import start
+from price_alert_app.tests.conftest import AZURITE_STORAGE_CONNECTION
+
+os.environ["STORAGE_CONNECTION"] = AZURITE_STORAGE_CONNECTION
 
 
 @pytest.mark.integration
@@ -10,7 +15,7 @@ def test_data_is_saved_when_data_doesnt_exist(integration_clients, test_df_to_cs
     blob_client = integration_clients["blob_client"]
     container_client = integration_clients["container_client"]
 
-    main()
+    start()
 
     download_stream = blob_client.download_blob()
     actual_csv_data = download_stream.readall()
@@ -36,7 +41,7 @@ def test_data_is_saved_when_existing_data_already_exists(
     test_csv_as_bytes = test_df_to_csv.encode("utf-8")
     blob_client.upload_blob(data=test_csv_as_bytes)
 
-    main()
+    start()
 
     download_stream = blob_client.download_blob()
     actual_downloaded_data = download_stream.readall()
