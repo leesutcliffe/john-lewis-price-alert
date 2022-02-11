@@ -5,9 +5,9 @@ from unittest import mock
 import freezegun
 import pandas as pd
 
-from src.constants import USER_AGENT
-from src.price_checker.price_checker import PriceChecker
-from src.repository.datastore import DataStore
+from price_alert_app.src.constants import USER_AGENT
+from price_alert_app.src.price_checker.price_checker import PriceChecker
+from price_alert_app.src.repository.datastore import DataStore
 
 test_url = "https://www.abc.com"
 headers = {"User-Agent": USER_AGENT}
@@ -108,8 +108,6 @@ def test_update_prices_by_passing_csv_to_datastore_when_existing_data_does_not_e
     mocked_datastore = mock.MagicMock(spec=DataStore)
     mocked_datastore.save_data.return_value = None
     mocked_datastore.blob_exists.return_value = False
-
-    # mocked_datastore.download.return_value = bytes(test_csv_data, "utf-8")
 
     price_checker = PriceChecker(mocked_datastore)
 

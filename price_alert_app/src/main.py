@@ -1,10 +1,10 @@
 import requests
 from azure.storage.blob import BlobServiceClient
-from conftest import AZURITE_STORAGE_CONNECTION
 
-from src.constants import ERCOL_URL
-from src.price_checker.price_checker import PriceChecker
-from src.repository.datastore import DataStore
+from price_alert_app.src.constants import ERCOL_URL
+from price_alert_app.src.price_checker.price_checker import PriceChecker
+from price_alert_app.src.repository.datastore import DataStore
+from price_alert_app.tests.conftest import AZURITE_STORAGE_CONNECTION
 
 
 def main() -> float:
@@ -15,12 +15,6 @@ def main() -> float:
     print(f"Price: {price}")
     return price
 
-
-"""
-get price
-if csv exists, add to current
-else save to new
-"""
 
 if __name__ == "__main__":
     main()

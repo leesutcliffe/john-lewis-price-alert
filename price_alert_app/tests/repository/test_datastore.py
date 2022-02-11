@@ -4,7 +4,7 @@ from unittest import mock
 import pandas as pd
 from azure.storage.blob import BlobClient, BlobServiceClient
 
-from src.repository.datastore import DataStore
+from price_alert_app.src.repository.datastore import DataStore
 
 CONTAINER_NAME = "data"
 BLOB_NAME = "ercol_prices.csv"

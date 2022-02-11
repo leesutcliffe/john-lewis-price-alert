@@ -17,7 +17,7 @@ AZURITE_STORAGE_CONNECTION = (
 
 
 @pytest.fixture
-def integration_clients():
+def integration_clients() -> dict:
     blob_service_client = BlobServiceClient.from_connection_string(AZURITE_STORAGE_CONNECTION)
 
     container_client = blob_service_client.get_container_client("data")
@@ -29,7 +29,7 @@ def integration_clients():
 
 
 @pytest.fixture
-def test_df_to_csv():
+def test_df_to_csv() -> pd.DataFrame:
     test_data = {
         "Date": [datetime(2022, 1, 1)],
         "Price": [450.0],
@@ -38,7 +38,7 @@ def test_df_to_csv():
 
 
 @pytest.fixture
-def test_with_existing_df_to_csv():
+def test_with_existing_df_to_csv() -> pd.DataFrame:
     test_data = {
         "Date": [datetime(2022, 1, 1), datetime(2022, 1, 2)],
         "Price": [450.0, 450.0],

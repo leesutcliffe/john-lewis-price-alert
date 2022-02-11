@@ -1,7 +1,7 @@
 import freezegun
 import pytest
 
-from src.main import main
+from price_alert_app.src.main import main
 
 
 @pytest.mark.integration
