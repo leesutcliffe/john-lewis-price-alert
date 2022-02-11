@@ -43,3 +43,8 @@ pre-integration:
 integration: pre-integration
 	@poetry run python -m pytest -m integration
 	@docker-compose --profile integration down
+
+.PHONY: requirements
+## Creates the requirements.txt from poetry's env
+requirements:
+	@poetry run python ./scripts/create_requirements_file.py

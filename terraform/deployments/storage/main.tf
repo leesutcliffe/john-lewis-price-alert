@@ -9,4 +9,5 @@ module "storage_account" {
   purpose = "data"
   rg      = azurerm_resource_group.rg
   tags    = local.tags
+  container = "data"
 }

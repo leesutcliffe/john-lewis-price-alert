@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "this" {
-  name                      = "ls${var.purpose}${random_integer.this.result}"
+  name                      = "ls${var.purpose}${random_string.this.result}"
   resource_group_name       = var.rg.name
   location                  = var.rg.location
   account_tier              = "Standard"
@@ -10,7 +10,17 @@ resource "azurerm_storage_account" "this" {
   tags                      = var.tags
 }
 
-resource "random_integer" "this" {
-  max = 9
-  min = 6
+resource "random_string" "this" {
+  length = 5
+  number = true
+  lower = false
+  special = false
+  upper = false
+}
+
+resource "azurerm_storage_container" "this" {
+  count = var.container != "" ? 1 : 0
+  name                  = var.container
+  storage_account_name  = azurerm_storage_account.this.name
+  container_access_type = "private"
 }
