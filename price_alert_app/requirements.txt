@@ -4,4 +4,6 @@ azure-storage-blob==12.9.0
 beautifulsoup4==4.10.0
 pandas==1.4.0
 requests==2.27.1
+toml==0.10.2
 types-requests==2.27.9
+types-toml==0.10.4

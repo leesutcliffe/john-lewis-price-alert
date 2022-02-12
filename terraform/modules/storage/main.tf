@@ -11,15 +11,15 @@ resource "azurerm_storage_account" "this" {
 }
 
 resource "random_string" "this" {
-  length = 5
-  number = true
-  lower = false
+  length  = 5
+  number  = true
+  lower   = false
   special = false
-  upper = false
+  upper   = false
 }
 
 resource "azurerm_storage_container" "this" {
-  count = var.container != "" ? 1 : 0
+  count                 = var.container != "" ? 1 : 0
   name                  = var.container
   storage_account_name  = azurerm_storage_account.this.name
   container_access_type = "private"

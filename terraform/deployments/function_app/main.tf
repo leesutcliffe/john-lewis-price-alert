@@ -14,7 +14,7 @@ module "storage_account" {
 module "function_app" {
   source            = "../../modules/function"
   rg                = azurerm_resource_group.rg
-  storage   = module.storage_account.details
+  storage           = module.storage_account.details
   function_app_name = "func-price-alert-app"
   app_settings      = local.app_settings
   tags              = local.tags

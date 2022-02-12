@@ -5,9 +5,9 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "storage_account" {
-  source  = "../../modules/storage"
-  purpose = "data"
-  rg      = azurerm_resource_group.rg
-  tags    = local.tags
+  source    = "../../modules/storage"
+  purpose   = "data"
+  rg        = azurerm_resource_group.rg
+  tags      = local.tags
   container = "data"
 }
