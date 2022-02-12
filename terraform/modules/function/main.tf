@@ -6,8 +6,8 @@ resource "azurerm_function_app" "this" {
   resource_group_name = var.rg.name
 
   app_service_plan_id        = azurerm_app_service_plan.this.id
-  storage_account_name       = var.storage_account.name
-  storage_account_access_key = var.storage_account.primary_access_key
+  storage_account_name       = var.storage.account.name
+  storage_account_access_key = var.storage.account.primary_access_key
   https_only                 = true
   os_type                    = "linux"
   version                    = "~3"
@@ -26,10 +26,7 @@ resource "azurerm_function_app" "this" {
     enabled = false
   }
 
-  app_settings = {
-    "FUNCTIONS_WORKER_RUNTIME" : "python",
-    "PYTHON_ENABLE_WORKER_EXTENSIONS" : "1",
-  }
+  app_settings = var.app_settings
 
   lifecycle {
     ignore_changes = [

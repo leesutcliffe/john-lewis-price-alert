@@ -4,13 +4,15 @@ variable "python_version" {
   default     = "3.9"
 }
 
-variable "storage_account" {}
+variable "storage" {}
 
 variable "rg" {}
 
 variable "tags" {}
 
 variable "function_app_name" {}
+
+variable "app_settings" {}
 
 locals {
   function_app_name_no_hyphens = replace(var.function_app_name, "-", "")

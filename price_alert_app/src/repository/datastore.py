@@ -5,10 +5,10 @@ class DataStore:
     blob_service_client: BlobServiceClient
     blob_name: str
     blob_client: BlobClient
-    container_name = "data"
 
-    def __init__(self, blob_service_client: BlobServiceClient, blob_name: str):
+    def __init__(self, blob_service_client: BlobServiceClient, container_name: str, blob_name: str):
         self.blob_service_client = blob_service_client
+        self.container_name = container_name
         self.blob_name = blob_name
         self.blob_client = self.blob_service_client.get_blob_client(self.container_name, self.blob_name)
 

@@ -9,9 +9,10 @@ from price_alert_app.src.repository.datastore import DataStore
 
 
 def start() -> float:
+    container_name = os.getenv("CONTAINER_NAME")
     storage_connection = str(os.getenv("STORAGE_CONNECTION"))
     blob_service_client = BlobServiceClient.from_connection_string(storage_connection)
-    datastore = DataStore(blob_service_client, "prices.csv")
+    datastore = DataStore(blob_service_client, container_name, "prices.csv")
     pc = PriceChecker(datastore)
     price = pc.get_price(ERCOL_URL, requests.get, save_price=True)
     return price

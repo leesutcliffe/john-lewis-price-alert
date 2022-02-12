@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import pandas as pd
@@ -18,6 +19,7 @@ AZURITE_STORAGE_CONNECTION = (
 
 @pytest.fixture
 def integration_clients() -> dict:
+    os.environ["CONTAINER_NAME"] = "data"
     blob_service_client = BlobServiceClient.from_connection_string(AZURITE_STORAGE_CONNECTION)
 
     container_client = blob_service_client.get_container_client("data")
