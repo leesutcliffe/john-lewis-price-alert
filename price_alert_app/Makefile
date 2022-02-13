@@ -29,7 +29,7 @@ test:
 
 .PHONY: all
 ## Run all required pre-push commands
-all: format lint test
+all: format lint test integration requirements
 	@echo -e "\n\n >> All Good!!! << :)"
 
 .PHONY: pre-integration

@@ -15,7 +15,7 @@ variable "tags" {}
 variable "function_app_name" {}
 
 variable "app_settings" {
-  ensitive = true
+  sensitive = true
 }
 
 locals {
