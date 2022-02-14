@@ -26,7 +26,7 @@ resource "azurerm_function_app" "this" {
     enabled = false
   }
 
-  app_settings = var.app_settings
+  app_settings = merge(var.app_settings, local.instrumentation_settings)
 
   lifecycle {
     ignore_changes = [
@@ -48,4 +48,12 @@ resource "azurerm_app_service_plan" "this" {
     size = "Y1"
   }
   tags = var.tags
+}
+
+resource "azurerm_application_insights" "this" {
+  name                = replace(var.function_app_name, "func", "appin")
+  location            = var.rg.location
+  resource_group_name = var.rg.name
+  application_type    = "web"
+  tags                = var.tags
 }
