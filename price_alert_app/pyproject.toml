@@ -15,6 +15,7 @@ azure-identity = "^1.7.1"
 azure-functions = "^1.8.0"
 toml = "^0.10.2"
 types-toml = "^0.10.4"
+sendgrid = "^6.9.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

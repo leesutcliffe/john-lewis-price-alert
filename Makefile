@@ -32,8 +32,12 @@ tf-func-nuke:
 	@terraform -chdir=terraform/deployments/function_app destroy -auto-approve
 
 .PHONY: deploy
-deploy:
+deploy: func_config
 	@cd price_alert_app; func azure functionapp publish func-price-alert-app --python;
+
+.PHONY: func_config
+func_config:
+	az functionapp config appsettings set --settings SENDGRID_API_KEY=$$(cat sendgrid.env) --name func-price-alert-app --resource-group rg-ls-func > /dev/null
 
 .PHONY: all
 ## Run all required pre-push commands
