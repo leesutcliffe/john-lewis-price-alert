@@ -3,8 +3,8 @@ import os
 import freezegun
 import pytest
 
-from price_alert_app.src.start import start
-from price_alert_app.tests.conftest import AZURITE_STORAGE_CONNECTION
+from src.start import start
+from tests.conftest import AZURITE_STORAGE_CONNECTION
 
 os.environ["STORAGE_CONNECTION"] = AZURITE_STORAGE_CONNECTION
 

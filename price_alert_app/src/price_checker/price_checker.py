@@ -5,8 +5,8 @@ from collections.abc import Callable
 import pandas as pd
 from bs4 import BeautifulSoup
 
-from price_alert_app.src.constants import USER_AGENT
-from price_alert_app.src.repository.datastore import DataStore
+from src.constants import USER_AGENT
+from src.repository.datastore import DataStore
 
 
 class PriceChecker:

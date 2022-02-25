@@ -5,9 +5,9 @@ from unittest import mock
 import freezegun
 import pandas as pd
 
-from price_alert_app.src.constants import USER_AGENT
-from price_alert_app.src.price_checker.price_checker import PriceChecker
-from price_alert_app.src.repository.datastore import DataStore
+from src.constants import USER_AGENT
+from src.price_checker.price_checker import PriceChecker
+from src.repository.datastore import DataStore
 
 test_url = "https://www.abc.com"
 headers = {"User-Agent": USER_AGENT}

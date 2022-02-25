@@ -3,7 +3,7 @@ import logging
 
 import azure.functions as func
 
-from price_alert_app.src.start import start
+from src.start import start
 
 
 def main(timer: func.TimerRequest) -> None:
