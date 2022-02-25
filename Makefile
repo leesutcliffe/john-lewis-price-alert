@@ -31,12 +31,18 @@ tf-storage-nuke:
 tf-func-nuke:
 	@terraform -chdir=terraform/deployments/function_app destroy -auto-approve
 
+.PHONY: deploy
+deploy:
+	@cd price_alert_app; func azure functionapp publish func-price-alert-app --python;
+
 .PHONY: all
 ## Run all required pre-push commands
-all: app tf-storage tf-func
+all: app tf-storage tf-func deploy
 	@echo -e "\n\n >> All Good!!! << :)"
 
 .PHONY: nuke
 ## destroy all the things
 nuke: tf-func-nuke tf-storage
 	@echo -e "\n\n >> BOOM!!! <<"
+
+
