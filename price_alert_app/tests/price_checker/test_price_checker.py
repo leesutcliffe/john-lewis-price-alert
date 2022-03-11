@@ -1,5 +1,4 @@
 import os
-import unittest
 from datetime import datetime
 from unittest import mock
 
@@ -170,61 +169,13 @@ def test_get_most_recent_previous_price():
     assert 400 == actual
 
 
-class MockedMail:
-    def __init__(self, from_email, to_emails, subject, html_content):
-        self.from_email = from_email
-        self.to_emails = to_emails
-        self.subject = subject
-        self.html_content = html_content
+@freezegun.freeze_time("2022-01-03")
+def test_return_zero_if_no_previous_price():
+    mocked_datastore = mock.MagicMock(spec=DataStore)
+    mocked_datastore.blob_exists.return_value = False
 
+    price_checker = PriceChecker(mocked_datastore)
 
-class MockedSendResponse:
-    status_code = 202
+    actual = price_checker.previous_price()
 
-
-class MockedSendGrid:
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.response = MockedSendResponse()
-
-    def send(self, message):
-        return self.response
-
-
-class MailTest(unittest.TestCase):
-    @mock.patch("src.price_checker.price_checker.SendGridAPIClient", side_effect=MockedSendGrid)
-    @mock.patch("src.price_checker.price_checker.Mail", side_effect=MockedMail)
-    def test_sending_email(self, mocked_mail, mocked_sendgrid):
-        previous_price_data = {
-            "Date": [datetime(2022, 1, 1)],
-            "Price": [500.0],
-        }
-        test_downloaded_existing_data = pd.DataFrame(data=previous_price_data).set_index("Date").to_csv()
-
-        mocked_datastore = mock.MagicMock(spec=DataStore)
-
-        mocked_datastore.download.return_value = bytes(test_downloaded_existing_data, "utf-8")
-
-        os.environ["SENDGRID_API_KEY"] = "12345"
-        price_checker = PriceChecker(mocked_datastore)
-        mocked_request = mock.Mock()
-        mocked_response = MockedResponse()
-        mocked_request.get.return_value = mocked_response
-        price_checker.get_current_price(test_url, mocked_request.get)
-
-        actual = price_checker.send_email()
-
-        self.assertIn(
-            mock.call(
-                from_email="lee@32mt.uk",
-                to_emails="lee@32mt.uk",
-                subject="Price Alert",
-                html_content="Price reduced from £500.0 to £450.0",
-            ),
-            mocked_mail.call_args_list,
-        )
-        self.assertIn(
-            mock.call("12345"),
-            mocked_sendgrid.call_args_list,
-        )
-        assert actual == 202
+    assert 0 == actual

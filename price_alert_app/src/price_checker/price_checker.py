@@ -1,11 +1,9 @@
 import datetime
 import io
-import os
 from collections.abc import Callable
 
 import pandas as pd
 from bs4 import BeautifulSoup
-from sendgrid import Mail, SendGridAPIClient
 
 from src.constants import USER_AGENT
 from src.repository.datastore import DataStore
@@ -18,7 +16,6 @@ class PriceChecker:
 
     def __init__(self, datastore: DataStore):
         self.datastore = datastore
-        self.sendgrid_api_key = str(os.environ.get("SENDGRID_API_KEY"))
 
     def get_current_price(self, url: str, get: Callable, save_price: bool = False) -> float:
         response = get(url, headers={"User-Agent": USER_AGENT})
@@ -33,9 +30,11 @@ class PriceChecker:
         return self.current_price
 
     def previous_price(self) -> float:
-        previous_prices_df = self._get_previous_prices()
-        most_recent_price = previous_prices_df.loc[previous_prices_df.index.max()]["Price"]
-        return most_recent_price
+        if self.datastore.blob_exists():
+            previous_prices_df = self._get_previous_prices()
+            most_recent_price = previous_prices_df.loc[previous_prices_df.index.max()]["Price"]
+            return most_recent_price
+        return 0
 
     def _add_current_price_to_df(self, df: pd.DataFrame, price: float) -> pd.DataFrame:
         new_row = pd.DataFrame({"Date": [datetime.datetime.now()], "Price": [price]}).set_index("Date")
@@ -59,16 +58,3 @@ class PriceChecker:
 
         prepared_data = _build_df()
         return prepared_data.to_csv()
-
-    def send_email(self) -> int:
-        previous = self.previous_price()
-        current = self.current_price
-        message = Mail(
-            from_email="lee@32mt.uk",
-            to_emails="lee@32mt.uk",
-            subject="Price Alert",
-            html_content=f"Price reduced from £{previous} to £{current}",
-        )
-        sg = SendGridAPIClient(self.sendgrid_api_key)
-        response = sg.send(message)
-        return response.status_code

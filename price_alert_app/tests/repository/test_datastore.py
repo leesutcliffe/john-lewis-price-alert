@@ -50,7 +50,7 @@ def test_returns_false_if_blob_doesnt_exist():
     assert result is False
 
 
-def test_returns_false_if_blob_does_exist():
+def test_returns_false_if_blob_does_not_exist():
     mocked_blob_svc_client = mock.MagicMock(spec=BlobServiceClient)
     mocked_blob_client = mock.MagicMock(spec=BlobClient)
     mocked_blob_svc_client.get_blob_client.return_value = mocked_blob_client

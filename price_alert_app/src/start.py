@@ -3,6 +3,7 @@ import os
 import requests
 from azure.storage.blob import BlobServiceClient
 
+from src.alert import alert
 from src.constants import ERCOL_URL
 from src.price_checker.price_checker import PriceChecker
 from src.repository.datastore import DataStore
@@ -17,9 +18,8 @@ def start() -> float:
 
     current_price = ercol.get_current_price(ERCOL_URL, requests.get)
     previous_price = ercol.previous_price()
-    # TODO: previous price may not exist
     if current_price < previous_price:
-        ercol.send_email()
+        alert.send(previous_price, current_price)
     ercol.get_current_price(ERCOL_URL, requests.get, save_price=True)
     return current_price
 
