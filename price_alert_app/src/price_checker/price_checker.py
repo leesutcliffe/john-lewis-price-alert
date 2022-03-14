@@ -17,17 +17,17 @@ class PriceChecker:
     def __init__(self, datastore: DataStore):
         self.datastore = datastore
 
-    def get_current_price(self, url: str, save_price: bool = False) -> float:
+    def get_current_price(self, url: str) -> float:
         response = requests.get(url, headers={"User-Agent": USER_AGENT})
         soup = BeautifulSoup(response.content, "html.parser")
         tags = soup.find_all(class_="price price--large")
         item_price = float(tags[0].string[1:7])
-        if save_price:
-            df = self._prepare_data(item_price)
-            self.datastore.save_data(df)
-
         self.current_price = item_price
         return self.current_price
+
+    def save_price(self, item_price: float) -> None:
+        df = self._prepare_data(item_price)
+        self.datastore.save_data(df)
 
     def previous_price(self) -> float:
         if self.datastore.blob_exists():

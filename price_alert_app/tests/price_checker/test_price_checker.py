@@ -108,10 +108,7 @@ def test_update_prices_by_passing_csv_to_datastore_when_existing_data_does_not_e
     mocked_datastore.blob_exists.return_value = False
 
     price_checker = PriceChecker(mocked_datastore)
-
-    with requests_mock.Mocker(real_http=True) as req_mock:
-        req_mock.register_uri("GET", ERCOL_URL, content=test_content)
-        price_checker.get_current_price(ERCOL_URL, save_price=True)
+    price_checker.save_price(450.0)
 
     mocked_datastore.save_data.assert_called_once_with(test_csv_data)
 
@@ -137,10 +134,7 @@ def test_update_prices_by_passing_csv_to_datastore_when_existing_data_exists():
     mocked_datastore.download.return_value = bytes(test_existing_data, "utf-8")
 
     price_checker = PriceChecker(mocked_datastore)
-
-    with requests_mock.Mocker(real_http=True) as req_mock:
-        req_mock.register_uri("GET", ERCOL_URL, content=test_content)
-        price_checker.get_current_price(ERCOL_URL, save_price=True)
+    price_checker.save_price(450.0)
 
     mocked_datastore.save_data.assert_called_once_with(test_csv_data)
 

@@ -15,11 +15,13 @@ def start() -> float:
     datastore = DataStore(blob_service_client, container_name, "prices.csv")
     ercol = PriceChecker(datastore)
 
-    current_price = ercol.get_current_price(ERCOL_URL)
+    # TODO: item from config, remove ercol references
+
     previous_price = ercol.previous_price()
+    current_price = ercol.get_current_price(ERCOL_URL)
     if current_price < previous_price:
         alert.send(previous_price, current_price)
-    ercol.get_current_price(ERCOL_URL, save_price=True)
+    ercol.save_price(current_price)
     return current_price
 
 
