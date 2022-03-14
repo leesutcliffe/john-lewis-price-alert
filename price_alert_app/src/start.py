@@ -1,6 +1,5 @@
 import os
 
-import requests
 from azure.storage.blob import BlobServiceClient
 
 from src.alert import alert
@@ -16,11 +15,11 @@ def start() -> float:
     datastore = DataStore(blob_service_client, container_name, "prices.csv")
     ercol = PriceChecker(datastore)
 
-    current_price = ercol.get_current_price(ERCOL_URL, requests.get)
+    current_price = ercol.get_current_price(ERCOL_URL)
     previous_price = ercol.previous_price()
     if current_price < previous_price:
         alert.send(previous_price, current_price)
-    ercol.get_current_price(ERCOL_URL, requests.get, save_price=True)
+    ercol.get_current_price(ERCOL_URL, save_price=True)
     return current_price
 
 

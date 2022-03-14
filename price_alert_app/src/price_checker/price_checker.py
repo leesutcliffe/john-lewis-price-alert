@@ -1,8 +1,8 @@
 import datetime
 import io
-from collections.abc import Callable
 
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 
 from src.constants import USER_AGENT
@@ -17,8 +17,8 @@ class PriceChecker:
     def __init__(self, datastore: DataStore):
         self.datastore = datastore
 
-    def get_current_price(self, url: str, get: Callable, save_price: bool = False) -> float:
-        response = get(url, headers={"User-Agent": USER_AGENT})
+    def get_current_price(self, url: str, save_price: bool = False) -> float:
+        response = requests.get(url, headers={"User-Agent": USER_AGENT})
         soup = BeautifulSoup(response.content, "html.parser")
         tags = soup.find_all(class_="price price--large")
         item_price = float(tags[0].string[1:7])

@@ -4,12 +4,12 @@ from unittest import mock
 
 import freezegun
 import pandas as pd
+import requests_mock
 
-from src.constants import USER_AGENT
+from src.constants import ERCOL_URL, USER_AGENT
 from src.price_checker.price_checker import PriceChecker
 from src.repository.datastore import DataStore
 
-test_url = "https://www.abc.com"
 headers = {"User-Agent": USER_AGENT}
 
 html_test_page = (
@@ -25,21 +25,17 @@ def get_content():
     return content
 
 
-class MockedResponse:
-    def __init__(self):
-        self.content = get_content()
+test_content = '<p class="price price--large">£450.00</p>'.encode("utf-8")
 
 
 def test_it_returns_price_when_url_is_requested():
-    mocked_response = MockedResponse()
-    mocked_request = mock.Mock()
-    mocked_request.get.return_value = mocked_response
     mocked_datastore = mock.MagicMock(spec=DataStore)
-
     price_checker = PriceChecker(mocked_datastore)
+    with requests_mock.Mocker(real_http=True) as req_mock:
+        req_mock.register_uri("GET", ERCOL_URL, content=test_content)
 
-    actual = price_checker.get_current_price(test_url, mocked_request.get)
-    mocked_request.get.assert_called_with(test_url, headers=headers)
+        actual = price_checker.get_current_price(ERCOL_URL)
+
     assert actual == 450.00
 
 
@@ -107,16 +103,15 @@ def test_update_prices_by_passing_csv_to_datastore_when_existing_data_does_not_e
     }
     test_csv_data = pd.DataFrame(data=test_data).set_index("Date").to_csv()
 
-    mocked_response = MockedResponse()
-    mocked_request = mock.Mock()
-    mocked_request.get.return_value = mocked_response
     mocked_datastore = mock.MagicMock(spec=DataStore)
     mocked_datastore.save_data.return_value = None
     mocked_datastore.blob_exists.return_value = False
 
     price_checker = PriceChecker(mocked_datastore)
 
-    price_checker.get_current_price(mocked_datastore, mocked_request.get, save_price=True)
+    with requests_mock.Mocker(real_http=True) as req_mock:
+        req_mock.register_uri("GET", ERCOL_URL, content=test_content)
+        price_checker.get_current_price(ERCOL_URL, save_price=True)
 
     mocked_datastore.save_data.assert_called_once_with(test_csv_data)
 
@@ -135,9 +130,6 @@ def test_update_prices_by_passing_csv_to_datastore_when_existing_data_exists():
     }
     test_existing_data = pd.DataFrame(data=test_existing_data).set_index("Date").to_csv()
 
-    mocked_response = MockedResponse()
-    mocked_request = mock.Mock()
-    mocked_request.get.return_value = mocked_response
     mocked_datastore = mock.MagicMock(spec=DataStore)
     mocked_datastore.save_data.return_value = None
     mocked_datastore.blob_exists.return_value = True
@@ -146,7 +138,9 @@ def test_update_prices_by_passing_csv_to_datastore_when_existing_data_exists():
 
     price_checker = PriceChecker(mocked_datastore)
 
-    price_checker.get_current_price(mocked_datastore, mocked_request.get, save_price=True)
+    with requests_mock.Mocker(real_http=True) as req_mock:
+        req_mock.register_uri("GET", ERCOL_URL, content=test_content)
+        price_checker.get_current_price(ERCOL_URL, save_price=True)
 
     mocked_datastore.save_data.assert_called_once_with(test_csv_data)
 
