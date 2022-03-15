@@ -3,6 +3,7 @@ azure-identity==1.7.1
 azure-storage-blob==12.9.0
 beautifulsoup4==4.10.0
 pandas==1.4.0
+pydantic==1.9.0
 requests==2.27.1
 sendgrid==6.9.6
 toml==0.10.2

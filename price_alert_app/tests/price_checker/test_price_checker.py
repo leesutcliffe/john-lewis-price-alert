@@ -7,6 +7,7 @@ import pandas as pd
 import requests_mock
 
 from src.constants import ERCOL_URL, USER_AGENT
+from src.items import Item
 from src.price_checker.price_checker import PriceChecker
 from src.repository.datastore import DataStore
 
@@ -27,6 +28,8 @@ def get_content():
 
 test_content = '<p class="price price--large">£450.00</p>'.encode("utf-8")
 
+test_item = Item(url=ERCOL_URL, description="some item", scraper_marker="price price--large", scraper_trim=(1, 7))
+
 
 def test_it_returns_price_when_url_is_requested():
     mocked_datastore = mock.MagicMock(spec=DataStore)
@@ -34,7 +37,7 @@ def test_it_returns_price_when_url_is_requested():
     with requests_mock.Mocker(real_http=True) as req_mock:
         req_mock.register_uri("GET", ERCOL_URL, content=test_content)
 
-        actual = price_checker.get_current_price(ERCOL_URL)
+        actual = price_checker.get_current_price(test_item)
 
     assert actual == 450.00
 

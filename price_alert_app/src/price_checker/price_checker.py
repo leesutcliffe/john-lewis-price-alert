@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from src.constants import USER_AGENT
+from src.items import Item
 from src.repository.datastore import DataStore
 
 
@@ -17,11 +18,13 @@ class PriceChecker:
     def __init__(self, datastore: DataStore):
         self.datastore = datastore
 
-    def get_current_price(self, url: str) -> float:
-        response = requests.get(url, headers={"User-Agent": USER_AGENT})
+    def get_current_price(self, item: Item) -> float:
+        response = requests.get(item.url, headers={"User-Agent": USER_AGENT})
         soup = BeautifulSoup(response.content, "html.parser")
-        tags = soup.find_all(class_="price price--large")
-        item_price = float(tags[0].string[1:7])
+        tags = soup.find_all(class_=item.scraper_marker)
+        left_slice = item.scraper_trim[0]
+        right_slice = item.scraper_trim[1]
+        item_price = float(tags[0].string[left_slice:right_slice])
         self.current_price = item_price
         return self.current_price
 
