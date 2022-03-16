@@ -50,7 +50,9 @@ def test_data_is_saved_when_data_doesnt_exist(integration_clients, test_df_to_cs
 @pytest.mark.integration
 @freezegun.freeze_time("2022-01-02")
 def test_data_is_saved_when_existing_data_already_exists(
-    integration_clients, test_df_to_csv, test_with_existing_df_to_csv
+    integration_clients,
+    test_df_to_csv,
+    test_df_updated_to_csv,
 ):
     content = get_content()
     with requests_mock.Mocker(real_http=True) as req_mock:
@@ -67,7 +69,7 @@ def test_data_is_saved_when_existing_data_already_exists(
 
         download_stream = blob_client.download_blob()
         actual_downloaded_data = download_stream.readall()
-        expected_downloaded_data = test_with_existing_df_to_csv.encode("utf-8")
+        expected_downloaded_data = test_df_updated_to_csv.encode("utf-8")
 
     assert expected_downloaded_data == actual_downloaded_data
     assert blob_client.blob_name == "prices.csv"

@@ -14,11 +14,13 @@ class PriceChecker:
     datastore: DataStore
     sendgrid_api_key: str
     current_price: float
+    description: str
 
     def __init__(self, datastore: DataStore):
         self.datastore = datastore
 
     def get_current_price(self, item: Item) -> float:
+        self.description = item.description
         response = requests.get(item.url, headers={"User-Agent": USER_AGENT})
         soup = BeautifulSoup(response.content, "html.parser")
         tags = soup.find_all(class_=item.scraper_marker)
@@ -35,29 +37,28 @@ class PriceChecker:
     def previous_price(self) -> float:
         if self.datastore.blob_exists():
             previous_prices_df = self._get_previous_prices()
-            most_recent_price = previous_prices_df.loc[previous_prices_df.index.max()]["Price"]
+            most_recent_price = previous_prices_df.at[self.description, "Price"]
             return most_recent_price
         return 0
 
-    def _add_current_price_to_df(self, df: pd.DataFrame, price: float) -> pd.DataFrame:
-        new_row = pd.DataFrame({"Date": [datetime.datetime.now()], "Price": [price]}).set_index("Date")
-        updated_df = pd.concat([df, new_row])
-        return updated_df
+    def _update_df(self, df: pd.DataFrame, price: float) -> pd.DataFrame:
+        df.loc[self.description, ["Date", "Price"]] = [datetime.datetime.now(), price]
+        return df
 
     def _get_previous_prices(self) -> pd.DataFrame:
         previous_prices = self.datastore.download()
         csv_file = io.StringIO(previous_prices.decode())
-        previous_prices_df = pd.read_csv(csv_file, index_col="Date", parse_dates=["Date"])
+        previous_prices_df = pd.read_csv(csv_file, index_col="Item", parse_dates=["Date"])
         return previous_prices_df
 
     def _prepare_data(self, price: float) -> str:
         def _build_df() -> pd.DataFrame:
             if self.datastore.blob_exists():
                 previous_prices_df = self._get_previous_prices()
-                return self._add_current_price_to_df(previous_prices_df, price)
+                return self._update_df(previous_prices_df, price)
             else:
-                data = {"Date": [datetime.datetime.now()], "Price": price}
-                return pd.DataFrame(data=data).set_index("Date")
+                data = {"Date": [datetime.datetime.now()], "Price": price, "Item": self.description}
+                return pd.DataFrame(data=data).set_index("Item")
 
         prepared_data = _build_df()
         return prepared_data.to_csv()

@@ -12,4 +12,6 @@ class Item(BaseModel):
     scraper_trim: Tuple[int, int]
 
 
-item = Item(url=ERCOL_URL, description="Ercol Bedside Table", scraper_marker="price price--large", scraper_trim=(1, 7))
+items = [
+    Item(url=ERCOL_URL, description="ercol_bedside", scraper_marker="price price--large", scraper_trim=(1, 7)),
+]
