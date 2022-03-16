@@ -7,7 +7,7 @@ import pandas as pd
 import requests_mock
 
 from src.constants import ERCOL_URL, USER_AGENT
-from src.items import Item
+from src.models.models import Item
 from src.price_checker.price_checker import PriceChecker
 from src.repository.datastore import DataStore
 

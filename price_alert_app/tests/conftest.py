@@ -32,11 +32,19 @@ def integration_clients() -> dict:
 
 @pytest.fixture
 def test_df_to_csv() -> pd.DataFrame:
-    test_data = {"Date": [datetime(2022, 1, 1)], "Price": [450.0], "Item": "ercol_bedside"}
+    test_data = {
+        "Date": [datetime(2022, 1, 1), datetime(2022, 1, 1)],
+        "Price": [450.0, 450.0],
+        "Item": ["ercol_bedside", "dualit_toaster"],
+    }
     return pd.DataFrame(data=test_data).set_index("Item").to_csv()
 
 
 @pytest.fixture
 def test_df_updated_to_csv() -> pd.DataFrame:
-    test_data = {"Date": [datetime(2022, 1, 2)], "Price": [450.0], "Item": "ercol_bedside"}
+    test_data = {
+        "Date": [datetime(2022, 1, 2), datetime(2022, 1, 2)],
+        "Price": [450.0, 450.0],
+        "Item": ["ercol_bedside", "dualit_toaster"],
+    }
     return pd.DataFrame(data=test_data).set_index("Item").to_csv()

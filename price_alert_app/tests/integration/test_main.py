@@ -4,7 +4,7 @@ import freezegun
 import pytest
 import requests_mock
 
-from src.constants import ERCOL_URL
+from src.constants import ERCOL_URL, TOASTER_URL
 from src.start import start
 from tests.conftest import AZURITE_STORAGE_CONNECTION
 
@@ -29,6 +29,7 @@ def test_data_is_saved_when_data_doesnt_exist(integration_clients, test_df_to_cs
     content = get_content()
     with requests_mock.Mocker(real_http=True) as req_mock:
         req_mock.register_uri("GET", ERCOL_URL, content=content)
+        req_mock.register_uri("GET", TOASTER_URL, content=content)
 
         blob_client = integration_clients["blob_client"]
         container_client = integration_clients["container_client"]
@@ -57,6 +58,7 @@ def test_data_is_saved_when_existing_data_already_exists(
     content = get_content()
     with requests_mock.Mocker(real_http=True) as req_mock:
         req_mock.register_uri("GET", ERCOL_URL, content=content)
+        req_mock.register_uri("GET", TOASTER_URL, content=content)
 
         blob_client = integration_clients["blob_client"]
         container_client = integration_clients["container_client"]

@@ -1,4 +1,4 @@
-from src.items import Item
+from src.models.models import Item
 
 
 def test_items():

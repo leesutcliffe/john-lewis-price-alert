@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from src.constants import USER_AGENT
-from src.items import Item
+from src.models.models import Item
 from src.repository.datastore import DataStore
 
 
@@ -37,8 +37,10 @@ class PriceChecker:
     def previous_price(self) -> float:
         if self.datastore.blob_exists():
             previous_prices_df = self._get_previous_prices()
-            most_recent_price = previous_prices_df.at[self.description, "Price"]
-            return most_recent_price
+            if self.description in previous_prices_df.index:
+                most_recent_price = previous_prices_df.at[self.description, "Price"]
+                return most_recent_price
+            return 0
         return 0
 
     def _update_df(self, df: pd.DataFrame, price: float) -> pd.DataFrame:
