@@ -4,9 +4,8 @@ import freezegun
 import pytest
 import requests_mock
 
-from src.constants import ERCOL_URL, TOASTER_URL
 from src.start import start
-from tests.conftest import AZURITE_STORAGE_CONNECTION
+from tests.conftest import AZURITE_STORAGE_CONNECTION, TEST_URL
 
 os.environ["STORAGE_CONNECTION"] = AZURITE_STORAGE_CONNECTION
 
@@ -25,16 +24,15 @@ def get_content():
 
 @pytest.mark.integration
 @freezegun.freeze_time("2022-01-01")
-def test_data_is_saved_when_data_doesnt_exist(integration_clients, test_df_to_csv):
+def test_data_is_saved_when_data_doesnt_exist(integration_clients, test_df_to_csv, test_items):
     content = get_content()
     with requests_mock.Mocker(real_http=True) as req_mock:
-        req_mock.register_uri("GET", ERCOL_URL, content=content)
-        req_mock.register_uri("GET", TOASTER_URL, content=content)
+        req_mock.register_uri("GET", TEST_URL, content=content)
 
         blob_client = integration_clients["blob_client"]
         container_client = integration_clients["container_client"]
 
-        start()
+        start(test_items)
 
         download_stream = blob_client.download_blob()
         actual_csv_data = download_stream.readall()
@@ -54,11 +52,11 @@ def test_data_is_saved_when_existing_data_already_exists(
     integration_clients,
     test_df_to_csv,
     test_df_updated_to_csv,
+    test_items,
 ):
     content = get_content()
     with requests_mock.Mocker(real_http=True) as req_mock:
-        req_mock.register_uri("GET", ERCOL_URL, content=content)
-        req_mock.register_uri("GET", TOASTER_URL, content=content)
+        req_mock.register_uri("GET", TEST_URL, content=content)
 
         blob_client = integration_clients["blob_client"]
         container_client = integration_clients["container_client"]
@@ -67,7 +65,7 @@ def test_data_is_saved_when_existing_data_already_exists(
         test_csv_as_bytes = test_df_to_csv.encode("utf-8")
         blob_client.upload_blob(data=test_csv_as_bytes)
 
-        start()
+        start(test_items)
 
         download_stream = blob_client.download_blob()
         actual_downloaded_data = download_stream.readall()

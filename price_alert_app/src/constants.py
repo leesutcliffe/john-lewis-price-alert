@@ -5,3 +5,6 @@ USER_AGENT = (
     "(KHTML, like Gecko) Version/15.0 "
     "Safari/605.1.15 "
 )
+BLOB_NAME = "prices.csv"
+STORAGE_CONNECTION = "STORAGE_CONNECTION"
+CONTAINER_NAME = "CONTAINER_NAME"

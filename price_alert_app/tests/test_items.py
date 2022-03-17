@@ -11,3 +11,13 @@ def test_items():
 
     actual = item.dict()
     assert actual == expected
+
+
+def test_items_with_defaults():
+    item = Item(url="https://some-path", description="Some Item")
+    expected = dict(
+        url="https://some-path", description="Some Item", scraper_marker="price price--large", scraper_trim=(1, 7)
+    )
+
+    actual = item.dict()
+    assert actual == expected

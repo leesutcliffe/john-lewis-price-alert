@@ -3,6 +3,8 @@ import unittest
 from unittest import mock
 
 from src.alert import alert
+from src.models.models import Item
+from tests.conftest import TEST_URL
 
 
 class MockedMail:
@@ -32,14 +34,15 @@ class MailTest(unittest.TestCase):
     def test_sending_email(self, mocked_mail, mocked_sendgrid):
         os.environ["SENDGRID_API_KEY"] = "12345"
 
-        actual = alert.send(500.0, 450.0)
+        test_item = Item(url=TEST_URL, description="some_item")
+        actual = alert.send(test_item, 500.0, 450.0)
 
         self.assertIn(
             mock.call(
                 from_email="lee@32mt.uk",
                 to_emails="lee@32mt.uk",
                 subject="Price Alert",
-                html_content="Price reduced from £500.0 to £450.0",
+                html_content=f"some_item reduced from £500.0 to £450.0<br>{TEST_URL}",
             ),
             mocked_mail.call_args_list,
         )
