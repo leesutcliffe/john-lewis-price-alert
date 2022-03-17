@@ -21,5 +21,5 @@ def start(items: List[Item]) -> None:
         current_price = price_checker.get_current_price(item)
         previous_price = price_checker.previous_price()
         if current_price < previous_price:
-            alert.send(previous_price, current_price)
+            alert.send(item, previous_price, current_price)
         price_checker.save_price(current_price)
