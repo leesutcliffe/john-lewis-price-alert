@@ -5,9 +5,10 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from src.constants import USER_AGENT
+from src.constants import USER_AGENT, DATE_COL, PRICE_COL, ITEM_COL
 from src.models.models import Item
 from src.repository.datastore import DataStore
+
 
 
 class PriceChecker:
@@ -38,19 +39,19 @@ class PriceChecker:
         if self.datastore.blob_exists():
             previous_prices_df = self._get_previous_prices()
             if self.description in previous_prices_df.index:
-                most_recent_price = previous_prices_df.at[self.description, "Price"]
+                most_recent_price = previous_prices_df.at[self.description, PRICE_COL]
                 return most_recent_price
             return 0
         return 0
 
     def _update_df(self, df: pd.DataFrame, price: float) -> pd.DataFrame:
-        df.loc[self.description, ["Date", "Price"]] = [datetime.datetime.now(), price]
+        df.loc[self.description, [DATE_COL, PRICE_COL]] = [datetime.datetime.now(), price]
         return df
 
     def _get_previous_prices(self) -> pd.DataFrame:
         previous_prices = self.datastore.download()
         csv_file = io.StringIO(previous_prices.decode())
-        previous_prices_df = pd.read_csv(csv_file, index_col="Item", parse_dates=["Date"])
+        previous_prices_df = pd.read_csv(csv_file, index_col=ITEM_COL, parse_dates=[DATE_COL])
         return previous_prices_df
 
     def _prepare_data(self, price: float) -> str:
@@ -59,8 +60,8 @@ class PriceChecker:
                 previous_prices_df = self._get_previous_prices()
                 return self._update_df(previous_prices_df, price)
             else:
-                data = {"Date": [datetime.datetime.now()], "Price": price, "Item": self.description}
-                return pd.DataFrame(data=data).set_index("Item")
+                data = {DATE_COL: [datetime.datetime.now()], PRICE_COL: price, ITEM_COL: self.description}
+                return pd.DataFrame(data=data).set_index(ITEM_COL)
 
         prepared_data = _build_df()
         return prepared_data.to_csv()
