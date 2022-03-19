@@ -5,10 +5,9 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from src.constants import USER_AGENT, DATE_COL, PRICE_COL, ITEM_COL
+from src.constants import DATE_COL, ITEM_COL, PRICE_COL, USER_AGENT
 from src.models.models import Item
 from src.repository.datastore import DataStore
-
 
 
 class PriceChecker:
