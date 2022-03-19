@@ -1,8 +1,10 @@
 import os
 import unittest
+from types import SimpleNamespace
 from unittest import mock
 
 from src.alert import alert
+from src.constants import ALERT_EMAIL
 from src.models.models import Item
 from tests.conftest import TEST_URL
 
@@ -15,17 +17,12 @@ class MockedMail:
         self.html_content = html_content
 
 
-class MockedSendResponse:
-    status_code = 202
-
-
 class MockedSendGrid:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.response = MockedSendResponse()
 
     def send(self, message):
-        return self.response
+        return SimpleNamespace(status_code=202)
 
 
 class MailTest(unittest.TestCase):
@@ -39,8 +36,8 @@ class MailTest(unittest.TestCase):
 
         self.assertIn(
             mock.call(
-                from_email="lee@32mt.uk",
-                to_emails="lee@32mt.uk",
+                from_email=ALERT_EMAIL,
+                to_emails=ALERT_EMAIL,
                 subject="Price Alert",
                 html_content=f"some_item reduced from £500.0 to £450.0<br>{TEST_URL}",
             ),
